@@ -14,6 +14,10 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { UserCircle } from 'lucide-react';
+import { Database } from '@/integrations/supabase/types';
+
+// Define the profile interface based on the database schema
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const profileSchema = z.object({
   username: z.string().min(3, { message: 'Username must be at least 3 characters' })
@@ -23,15 +27,6 @@ const profileSchema = z.object({
 });
 
 type ProfileFormValues = z.infer<typeof profileSchema>;
-
-interface Profile {
-  id: string;
-  username: string;
-  full_name: string;
-  avatar_url: string | null;
-  created_at: string;
-  updated_at: string;
-}
 
 const ProfilePage = () => {
   const { user, loading, signOut } = useAuth();
@@ -69,7 +64,7 @@ const ProfilePage = () => {
         if (error) throw error;
         
         if (data) {
-          setProfile(data);
+          setProfile(data as Profile);
           form.reset({
             username: data.username || '',
             full_name: data.full_name || '',
@@ -119,7 +114,7 @@ const ProfilePage = () => {
         .eq('id', user.id)
         .single();
         
-      if (data) setProfile(data);
+      if (data) setProfile(data as Profile);
       
     } catch (error: any) {
       toast({
