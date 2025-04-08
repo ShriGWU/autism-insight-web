@@ -2,21 +2,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-import { Brain, User } from 'lucide-react';
-import { useAuth } from '@/context/AuthContext';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
+import { Brain } from 'lucide-react';
 
 const Navbar = () => {
   const location = useLocation();
-  const { user, loading } = useAuth();
-  
-  const getInitials = (name: string) => {
-    return name.split(' ')
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
-  };
   
   const navItems = [
     { name: 'Home', path: '/' },
@@ -49,33 +38,6 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
-            
-            {!loading && (
-              user ? (
-                <Link
-                  to="/profile"
-                  className={cn(
-                    "inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium h-full",
-                    location.pathname === "/profile"
-                      ? "border-primary text-primary font-semibold"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                  )}
-                >
-                  <Avatar className="h-8 w-8 mr-2">
-                    <AvatarImage src={user.user_metadata?.avatar_url} />
-                    <AvatarFallback>{getInitials(user.user_metadata?.full_name || user.email || 'U')}</AvatarFallback>
-                  </Avatar>
-                  Profile
-                </Link>
-              ) : (
-                <Link to="/auth">
-                  <Button variant="outline" className="ml-4">
-                    <User className="h-4 w-4 mr-2" />
-                    Sign In
-                  </Button>
-                </Link>
-              )
-            )}
           </div>
         </div>
       </div>
@@ -97,20 +59,6 @@ const Navbar = () => {
               {item.name}
             </Link>
           ))}
-          
-          {!loading && (
-            <Link
-              to={user ? "/profile" : "/auth"}
-              className={cn(
-                "flex-1 text-center py-2 px-3 text-sm font-medium rounded-md",
-                location.pathname === (user ? "/profile" : "/auth")
-                  ? "bg-primary text-white"
-                  : "text-gray-500 hover:bg-gray-100"
-              )}
-            >
-              {user ? "Profile" : "Sign In"}
-            </Link>
-          )}
         </div>
       </div>
     </nav>
