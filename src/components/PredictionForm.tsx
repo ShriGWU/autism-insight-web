@@ -1,14 +1,13 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Card } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/components/ui/use-toast';
 import ImageUpload from './ImageUpload';
 import { Brain, Loader2 } from 'lucide-react';
+import { MODEL_API_CONFIG } from '@/config/modelConfig';
 
 interface PatientData {
   name: string;
@@ -16,6 +15,11 @@ interface PatientData {
   sex: string;
   dob: string;
   image: File | null;
+}
+
+interface PredictionResponse {
+  prediction: string;
+  confidence: number;
 }
 
 const PredictionForm = () => {
@@ -63,22 +67,40 @@ const PredictionForm = () => {
     setConfidenceScore(null);
 
     try {
-      // Simulate API call to prediction model
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Create form data to send the image
+      const formData = new FormData();
+      if (patientData.image) {
+        formData.append('image', patientData.image);
+      }
+      formData.append('name', patientData.name);
+      formData.append('age', patientData.age);
+      formData.append('sex', patientData.sex);
       
-      // Mock result (in a real app, this would come from your backend)
-      // Random result for demo purposes
-      const isAutism = Math.random() > 0.5;
-      const confidence = Math.floor(Math.random() * 15) + 85; // 85-99% confidence
+      // Use the endpoint from the configuration
+      const response = await fetch(MODEL_API_CONFIG.ENDPOINT_URL, {
+        method: 'POST',
+        body: formData,
+        // Optional: Add any required headers here
+        // headers: {
+        //   'Authorization': `Bearer ${MODEL_API_CONFIG.API_KEY}`
+        // }
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const result: PredictionResponse = await response.json();
       
-      setPredictionResult(isAutism ? 'Autism Detected' : 'No Autism Detected');
-      setConfidenceScore(confidence);
+      setPredictionResult(result.prediction);
+      setConfidenceScore(result.confidence);
       
       toast({
         title: "Analysis complete",
         description: "Prediction results are ready.",
       });
     } catch (error) {
+      console.error("Error calling model API:", error);
       toast({
         title: "Error",
         description: "There was an error processing your request. Please try again.",
@@ -92,6 +114,7 @@ const PredictionForm = () => {
   return (
     <div>
       <form onSubmit={handleSubmit} className="space-y-8">
+        
         <div className="grid md:grid-cols-2 gap-6">
           <div>
             <Label htmlFor="name">Patient Name</Label>
