@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,14 +68,11 @@ const PredictionForm = () => {
     setConfidenceScore(null);
 
     try {
-      // Create form data to send the image
+      // Create form data to send ONLY the image
       const formData = new FormData();
       if (patientData.image) {
         formData.append('image', patientData.image);
       }
-      formData.append('name', patientData.name);
-      formData.append('age', patientData.age);
-      formData.append('sex', patientData.sex);
       
       // Use the endpoint from the configuration
       const response = await fetch(MODEL_API_CONFIG.ENDPOINT_URL, {
