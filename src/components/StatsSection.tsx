@@ -14,7 +14,7 @@ const StatsSection = () => {
         
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {[
-            { value: '95%', label: 'Accuracy' },
+            { value: '60%', label: 'Accuracy' },
             { value: '3x', label: 'Faster Detection' },
             { value: '1000+', label: 'MRI Scans Analyzed' },
             { value: '60%', label: 'Earlier Diagnosis' },
