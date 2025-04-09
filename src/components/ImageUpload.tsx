@@ -26,21 +26,27 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
   };
 
   const validateAndProcessFile = (file: File) => {
-    // Check if file is an image
-    if (!file.type.startsWith('image/')) {
+    // Check if file is a valid MRI file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/dicom'];
+    const fileName = file.name.toLowerCase();
+    
+    // Allow NIfTI files based on extension since they might not have a standard MIME type
+    const isNifti = fileName.endsWith('.nii') || fileName.endsWith('.nii.gz');
+    
+    if (!validTypes.includes(file.type) && !isNifti) {
       toast({
         title: "Invalid file type",
-        description: "Please upload an image file (JPEG, PNG, etc.)",
+        description: "Please upload a valid MRI file (DICOM, NIfTI, JPEG, PNG)",
         variant: "destructive"
       });
       return;
     }
 
-    // Check file size (limit to 5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    // Check file size (limit to 50MB since MRI files can be large)
+    if (file.size > 50 * 1024 * 1024) {
       toast({
         title: "File too large",
-        description: "Please upload an image smaller than 5MB",
+        description: "Please upload a file smaller than 50MB",
         variant: "destructive"
       });
       return;
@@ -48,13 +54,30 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
 
     setIsLoading(true);
     
-    // Simulate processing time
-    setTimeout(() => {
-      setSelectedFile(file);
-      setPreview(URL.createObjectURL(file));
-      onImageSelect(file);
-      setIsLoading(false);
-    }, 800);
+    // For NIfTI files, we can't generate a preview directly
+    // So we'll use a placeholder for the preview
+    if (isNifti) {
+      setTimeout(() => {
+        setSelectedFile(file);
+        // Use a brain scan placeholder for NIfTI files
+        setPreview('/brain-scan-placeholder.png');
+        onImageSelect(file);
+        setIsLoading(false);
+        
+        toast({
+          title: "NIfTI file selected",
+          description: "3D brain scan file ready for analysis",
+        });
+      }, 800);
+    } else {
+      // For image files, create preview as before
+      setTimeout(() => {
+        setSelectedFile(file);
+        setPreview(URL.createObjectURL(file));
+        onImageSelect(file);
+        setIsLoading(false);
+      }, 800);
+    }
   };
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -102,7 +125,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
               <UploadCloud className="mx-auto h-12 w-12 text-gray-400" />
               <div className="mt-4 flex flex-col items-center text-sm text-gray-600">
                 <p className="font-semibold">Click to upload or drag and drop</p>
-                <p className="text-xs mt-1">DICOM, NIfTI, JPG or PNG (max. 5MB)</p>
+                <p className="text-xs mt-1">3D NIfTI (.nii, .nii.gz), DICOM, JPG or PNG (max. 50MB)</p>
               </div>
             </>
           )}
@@ -111,7 +134,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
             type="file"
             onChange={handleFileChange}
             className="hidden"
-            accept="image/*"
+            accept=".nii,.nii.gz,image/*,.dcm"
             disabled={isLoading}
           />
         </div>
@@ -126,7 +149,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onImageSelect }) => {
             />
             <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-50 text-white p-2 text-sm flex items-center">
               <Image className="h-4 w-4 mr-1" />
-              {selectedFile?.name}
+              {selectedFile?.name} {selectedFile?.name.endsWith('.nii') || selectedFile?.name.endsWith('.nii.gz') ? '(3D NIfTI File)' : ''}
             </div>
           </div>
           <div className="p-4 flex justify-end">

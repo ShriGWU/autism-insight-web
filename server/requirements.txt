@@ -6,3 +6,5 @@ tensorflow==2.8.0  # Replace with your model's required version
 opencv-python==4.5.3.56
 werkzeug==2.0.1
 gunicorn==20.1.0
+nibabel==4.0.2  # For NIfTI file handling
+scikit-image==0.19.1  # For additional image processing if needed
