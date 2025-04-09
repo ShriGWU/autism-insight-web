@@ -3,6 +3,7 @@ import React from 'react';
 import Layout from '../components/Layout';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { Brain } from 'lucide-react';
 
 const About = () => {
   return (
@@ -27,12 +28,16 @@ const About = () => {
               Autism spectrum disorder (ASD) is a neurological and developmental disorder that affects how people interact with others, communicate, learn, and behave. Although autism can be diagnosed at any age, it is described as a "developmental disorder" because symptoms generally appear in the first two years of life.
             </p>
             
-            <div className="my-8">
-              <img
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070"
-                alt="Brain scan visualization"
-                className="rounded-xl shadow-lg"
-              />
+            <div className="my-8 flex flex-col items-center">
+              <div className="bg-accent/30 rounded-xl shadow-lg p-8 flex flex-col items-center">
+                <Brain className="w-20 h-20 text-primary mb-4" />
+                <div className="text-center max-w-lg">
+                  <h3 className="text-xl font-semibold text-primary mb-2">Neural Differences</h3>
+                  <p className="text-gray-700">
+                    Autism is associated with differences in brain structure and connectivity. These neurological variations contribute to the unique ways individuals with autism perceive and interact with the world around them.
+                  </p>
+                </div>
+              </div>
             </div>
             
             <h2 className="text-2xl font-bold text-gray-900 mt-12">The Importance of Early Detection</h2>
